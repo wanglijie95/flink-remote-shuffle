@@ -788,6 +788,14 @@ public class RemoteShuffleInputGate extends IndexedInputGate {
         }
 
         @Override
+        public void addOutputDataFuture(
+                long l,
+                ResultSubpartitionInfo resultSubpartitionInfo,
+                int i,
+                CompletableFuture<List<Buffer>> completableFuture)
+                throws IllegalArgumentException {}
+
+        @Override
         public void close() {}
     }
 }

@@ -21,6 +21,7 @@ import com.alibaba.flink.shuffle.common.utils.ExceptionUtils;
 import com.alibaba.flink.shuffle.plugin.utils.BufferUtils;
 
 import org.apache.flink.core.memory.MemorySegment;
+import org.apache.flink.runtime.checkpoint.CheckpointException;
 import org.apache.flink.runtime.event.AbstractEvent;
 import org.apache.flink.runtime.io.network.api.EndOfData;
 import org.apache.flink.runtime.io.network.api.EndOfPartitionEvent;
@@ -418,6 +419,15 @@ public class RemoteShuffleResultPartition extends ResultPartition {
     public CompletableFuture<Void> getAllDataProcessedFuture() {
         return CompletableFuture.completedFuture(null);
     }
+
+    @Override
+    protected void setupInternal() {}
+
+    @Override
+    public void alignedBarrierTimeout(long l) {}
+
+    @Override
+    public void abortCheckpoint(long l, CheckpointException e) {}
 
     @Override
     public String toString() {
