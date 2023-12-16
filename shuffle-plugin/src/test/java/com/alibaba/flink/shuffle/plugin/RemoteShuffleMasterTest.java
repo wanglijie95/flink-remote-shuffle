@@ -140,6 +140,8 @@ public class RemoteShuffleMasterTest extends RemoteShuffleShuffleTestBase {
         try (RemoteShuffleMaster shuffleMaster =
                 createAndInitializeShuffleMaster(new org.apache.flink.api.common.JobID())) {
             Map<IntermediateDataSetID, Integer> numberOfInputGateChannels = new HashMap<>();
+            Map<IntermediateDataSetID, Integer> partitionReuseCount = new HashMap<>();
+            Map<IntermediateDataSetID, ResultPartitionType> inputPartitionTypes = new HashMap<>();
             Map<IntermediateDataSetID, Integer> numbersOfResultSubpartitions = new HashMap<>();
             Map<IntermediateDataSetID, ResultPartitionType> resultPartitionTypes = new HashMap<>();
             IntermediateDataSetID inputDataSetID0 = new IntermediateDataSetID();
@@ -150,6 +152,10 @@ public class RemoteShuffleMasterTest extends RemoteShuffleShuffleTestBase {
             Random random = new Random();
             numberOfInputGateChannels.put(inputDataSetID0, random.nextInt(1000));
             numberOfInputGateChannels.put(inputDataSetID1, random.nextInt(1000));
+            partitionReuseCount.put(inputDataSetID0, random.nextInt(1000));
+            partitionReuseCount.put(inputDataSetID1, random.nextInt(1000));
+            inputPartitionTypes.put(inputDataSetID0, ResultPartitionType.BLOCKING);
+            inputPartitionTypes.put(inputDataSetID1, ResultPartitionType.BLOCKING);
             numbersOfResultSubpartitions.put(outputDataSetID0, random.nextInt(1000));
             numbersOfResultSubpartitions.put(outputDataSetID1, random.nextInt(1000));
             numbersOfResultSubpartitions.put(outputDataSetID2, random.nextInt(1000));
@@ -161,7 +167,9 @@ public class RemoteShuffleMasterTest extends RemoteShuffleShuffleTestBase {
                             TaskInputsOutputsDescriptor.from(
                                     1,
                                     numberOfInputGateChannels,
+                                    partitionReuseCount,
                                     numbersOfResultSubpartitions,
+                                    inputPartitionTypes,
                                     resultPartitionTypes));
 
             long numBytesPerGate =

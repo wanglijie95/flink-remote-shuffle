@@ -240,7 +240,7 @@ public class RemoteShuffleResultPartition extends ResultPartition {
 
                     Buffer buffer = bufferWithChannel.getBuffer();
                     int subpartitionIndex = bufferWithChannel.getChannelIndex();
-                    updateStatistics(bufferWithChannel.getBuffer(), isBroadcast);
+                    updateStatistics(bufferWithChannel.getBuffer(), subpartitionIndex, isBroadcast);
                     writeCompressedBufferIfPossible(buffer, subpartitionIndex);
                 }
                 outputGate.regionFinish();
@@ -277,10 +277,14 @@ public class RemoteShuffleResultPartition extends ResultPartition {
         outputGate.write(buffer, targetSubpartition);
     }
 
-    private void updateStatistics(Buffer buffer, boolean isBroadcast) {
+    private void updateStatistics(Buffer buffer, int channelIndex, boolean isBroadcast) {
         numBuffersOut.inc(isBroadcast ? numSubpartitions : 1);
         long readableBytes = buffer.readableBytes() - BufferUtils.HEADER_LENGTH;
-        numBytesProduced.inc(readableBytes);
+        if (isBroadcast) {
+            resultPartitionBytes.incAll(readableBytes);
+        } else {
+            resultPartitionBytes.inc(channelIndex, readableBytes);
+        }
         numBytesOut.inc(isBroadcast ? readableBytes * numSubpartitions : readableBytes);
     }
 
@@ -302,7 +306,7 @@ public class RemoteShuffleResultPartition extends ResultPartition {
                             dataType,
                             toCopy + BufferUtils.HEADER_LENGTH);
 
-            updateStatistics(buffer, isBroadcast);
+            updateStatistics(buffer, targetSubpartition, isBroadcast);
             writeCompressedBufferIfPossible(buffer, targetSubpartition);
         }
         outputGate.regionFinish();

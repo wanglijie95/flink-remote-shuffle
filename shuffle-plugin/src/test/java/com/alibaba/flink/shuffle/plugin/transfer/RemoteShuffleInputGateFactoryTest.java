@@ -34,13 +34,13 @@ import com.alibaba.flink.shuffle.transfer.TransferBufferPool;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.runtime.deployment.InputGateDeploymentDescriptor;
+import org.apache.flink.runtime.deployment.TaskDeploymentDescriptorFactory;
 import org.apache.flink.runtime.io.network.buffer.BufferDecompressor;
 import org.apache.flink.runtime.io.network.buffer.BufferPool;
 import org.apache.flink.runtime.io.network.buffer.NetworkBufferPool;
 import org.apache.flink.runtime.io.network.partition.ResultPartitionID;
 import org.apache.flink.runtime.io.network.partition.ResultPartitionType;
 import org.apache.flink.runtime.jobgraph.IntermediateDataSetID;
-import org.apache.flink.runtime.shuffle.ShuffleDescriptor;
 import org.apache.flink.util.function.SupplierWithException;
 
 import org.apache.flink.shaded.netty4.io.netty.buffer.ByteBuf;
@@ -135,9 +135,11 @@ public class RemoteShuffleInputGateFactoryTest {
                 createShuffleDescriptors(numShuffleDescs));
     }
 
-    private ShuffleDescriptor[] createShuffleDescriptors(int num) throws Exception {
+    private TaskDeploymentDescriptorFactory.ShuffleDescriptorAndIndex[] createShuffleDescriptors(
+            int num) throws Exception {
         JobID jID = new JobID(CommonUtils.randomBytes(8));
-        RemoteShuffleDescriptor[] ret = new RemoteShuffleDescriptor[num];
+        TaskDeploymentDescriptorFactory.ShuffleDescriptorAndIndex[] ret =
+                new TaskDeploymentDescriptorFactory.ShuffleDescriptorAndIndex[num];
         for (int i = 0; i < num; i++) {
             ResultPartitionID rID = new ResultPartitionID();
             ShuffleResource resource =
@@ -147,7 +149,9 @@ public class RemoteShuffleInputGateFactoryTest {
                                         null, InetAddress.getLocalHost().getHostAddress(), 0)
                             },
                             DataPartition.DataPartitionType.MAP_PARTITION);
-            ret[i] = new RemoteShuffleDescriptor(rID, jID, resource);
+            ret[i] =
+                    new TaskDeploymentDescriptorFactory.ShuffleDescriptorAndIndex(
+                            new RemoteShuffleDescriptor(rID, jID, resource), i);
         }
         return ret;
     }

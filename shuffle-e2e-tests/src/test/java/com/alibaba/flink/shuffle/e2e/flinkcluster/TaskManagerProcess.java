@@ -37,6 +37,7 @@ import org.apache.flink.runtime.io.network.buffer.NetworkBufferPool;
 import org.apache.flink.runtime.metrics.MetricRegistry;
 import org.apache.flink.runtime.rpc.FatalErrorHandler;
 import org.apache.flink.runtime.rpc.RpcService;
+import org.apache.flink.runtime.security.token.DelegationTokenReceiverRepository;
 import org.apache.flink.runtime.taskexecutor.TaskExecutor;
 import org.apache.flink.runtime.taskexecutor.TaskExecutorToServiceAdapter;
 import org.apache.flink.runtime.taskexecutor.TaskManagerRunner;
@@ -152,7 +153,8 @@ public class TaskManagerProcess extends TestJvmProcess {
                 boolean localCommunicationOnly,
                 ExternalResourceInfoProvider externalResourceInfoProvider,
                 WorkingDirectory workingDirectory,
-                FatalErrorHandler fatalErrorHandler)
+                FatalErrorHandler fatalErrorHandler,
+                DelegationTokenReceiverRepository delegationTokenReceiverRepository)
                 throws Exception {
 
             final TaskExecutor taskExecutor =
@@ -167,7 +169,8 @@ public class TaskManagerProcess extends TestJvmProcess {
                             localCommunicationOnly,
                             externalResourceInfoProvider,
                             workingDirectory,
-                            fatalErrorHandler);
+                            fatalErrorHandler,
+                            new DelegationTokenReceiverRepository(configuration, null));
             startMetricsReportingDaemon(configuration, taskExecutor);
             return TaskExecutorToServiceAdapter.createFor(taskExecutor);
         }

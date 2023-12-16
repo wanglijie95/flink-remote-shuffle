@@ -36,9 +36,9 @@ import org.apache.flink.runtime.checkpoint.channel.InputChannelInfo;
 import org.apache.flink.runtime.checkpoint.channel.ResultSubpartitionInfo;
 import org.apache.flink.runtime.clusterframework.types.ResourceID;
 import org.apache.flink.runtime.deployment.InputGateDeploymentDescriptor;
-import org.apache.flink.runtime.deployment.SubpartitionIndexRange;
 import org.apache.flink.runtime.event.AbstractEvent;
 import org.apache.flink.runtime.event.TaskEvent;
+import org.apache.flink.runtime.executiongraph.IndexRange;
 import org.apache.flink.runtime.io.network.ConnectionID;
 import org.apache.flink.runtime.io.network.LocalConnectionManager;
 import org.apache.flink.runtime.io.network.api.CheckpointBarrier;
@@ -719,7 +719,7 @@ public class RemoteShuffleInputGate extends IndexedInputGate {
                             gateIndex,
                             new IntermediateDataSetID(),
                             ResultPartitionType.BLOCKING,
-                            new SubpartitionIndexRange(0, 0),
+                            new IndexRange(0, 0),
                             1,
                             (a, b, c) -> {},
                             () -> null,
